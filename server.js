@@ -21,19 +21,23 @@ app.use(logger("dev"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(session(sessionConfig));
 
+//endpoints
 app.get("/", (req, res) => {
     console.log(req.session);
-    res.render("home");
+    if (req.session.user) {
+        res.render("home", { user: req.session.user });
+    } else {
+        res.render("login");
+    }
 });
 
 app.get("/signup", (req, res) => {
-    res.render("signiup");
+    res.render("signup");
 });
 
 app.post("/signup", (req, res) => {
     let newUser = req.body;
-    //checks if username is used
-    //check password
+
     console.log("newUser: ", newUser);
     users.push(newUser);
     console.log("users: ", users);
@@ -57,14 +61,22 @@ app.post("/login", (req, res) => {
         delete foundUser.password;
         req.session.user = foundUser;
         res.redirect("/");
+
+
     } else {
         return res.render("login", { errors: ["Password does not match"] });
     }
 });
 
-app.get("profile", checkAuth, (req, res) => {
+// app.get("/", checkAuth, (req, res) => {
+//     res.render("home", { user: req.session.user });
+// });
+
+app.get("/profile", checkAuth, (req, res) => {
     res.render("profile", { user: req.session.user });
 });
+
+
 
 app.listen(port, () => {
     console.log(`running on port: ${port}`);
