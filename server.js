@@ -25,9 +25,9 @@ app.use(session(sessionConfig));
 app.get("/", (req, res) => {
     console.log(req.session);
     if (req.session.user) {
-        res.render("home", { user: req.session.user });
+        return res.render("home", { user: req.session.user });
     } else {
-        res.render("login");
+        return res.render("login");
     }
 });
 
@@ -68,15 +68,15 @@ app.post("/login", (req, res) => {
     }
 });
 
-// app.get("/", checkAuth, (req, res) => {
-//     res.render("home", { user: req.session.user });
-// });
 
 app.get("/profile", checkAuth, (req, res) => {
     res.render("profile", { user: req.session.user });
 });
 
-
+app.get('/logout', function (req, res) {
+    req.session.destroy();
+    res.redirect('/');
+});
 
 app.listen(port, () => {
     console.log(`running on port: ${port}`);
